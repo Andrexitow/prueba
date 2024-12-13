@@ -3,10 +3,10 @@
 
 export async function renderSettings(container) {
     const token = localStorage.getItem('token'); // O usa tu función para obtener el token
-    if (!token) {
-      navigate('login'); // Si no hay token, redirige al login
-      return;
-    }
+    // if (!token) {
+    //   navigate('login'); // Si no hay token, redirige al login
+    //   return;
+    // }
   
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if (!userInfo || !userInfo.userId) {

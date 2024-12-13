@@ -3,7 +3,7 @@ import { renderRegister } from '../components/register.js';
 import { renderDashboard } from '../components/dashboardADMIN.js';
 import { renderStudentEnrollment } from '../components/matricula.js';
 import { renderMatricula } from '../components/matriculacion.js';
-// import { renderSettings } from '../components/settings.js';
+import { renderSettings } from '../components/settings.js';
 import { renderAcademicPlatform } from '../components/academicPlataform.js';
 import renderEducacionVirtual from '../components/views/educacionVirtual.js';
 import { renderHome } from '../components/home.js';
@@ -85,26 +85,60 @@ async function navigate(view) {
       }
       break;
 
-      case 'matricula':
-      if (isAuthenticated()) {
-        try {
-          const isEnrolled = await validate(userInfo.userId);
-          console.log('Resultado de isEnrolled:', isEnrolled);
+      // case 'matricula':
+      // if (isAuthenticated()) {
+      //   try {
+      //     const isEnrolled = await validate(userInfo.userId);
+      //     console.log('Resultado de isEnrolled:', isEnrolled);
 
-          if (!isEnrolled) {
-            renderStudentEnrollment(appContainer); // Si no está matriculado, muestra la vista de matrícula.
-          } else {
-            return navigate('academicPlataform'); // Evitar bucles usando return
-          }
-        } catch (error) {
-          console.error('Error al validar la matrícula:', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Hubo un problema al validar tu matrícula. Intenta más tarde.',
-            confirmButtonText: 'Aceptar',
-          });
-        }
+      //     if (!isEnrolled) {
+      //       renderStudentEnrollment(appContainer); // Si no está matriculado, muestra la vista de matrícula.
+      //     } else {
+      //       return navigate('academicPlataform'); // Evitar bucles usando return
+      //     }
+      //   } catch (error) {
+      //     console.error('Error al validar la matrícula:', error);
+      //     Swal.fire({
+      //       icon: 'error',
+      //       title: 'Error',
+      //       text: 'Hubo un problema al validar tu matrícula. Intenta más tarde.',
+      //       confirmButtonText: 'Aceptar',
+      //     });
+      //   }
+      // } else {
+      //   redirectToLogin();
+      // }
+      // break;
+
+    // case 'academicPlatform':
+    //   if (isAuthenticated()) {
+    //     try {
+    //       const isEnrolled = await validate(userInfo.userId);
+    //       console.log('Resultado de validate:', isEnrolled);
+
+    //       if (isEnrolled) {
+    //         renderAcademicPlatform(appContainer); // Si está matriculado, muestra la plataforma académica.
+    //       } else {
+    //         return navigate('matricula'); // Evitar bucles usando return
+    //       }
+    //     } catch (error) {
+    //       console.error('Error al validar la plataforma académica:', error);
+    //       Swal.fire({
+    //         icon: 'error',
+    //         title: 'Error',
+    //         text: 'Hubo un problema al validar tu acceso. Intenta más tarde.',
+    //         confirmButtonText: 'Aceptar',
+    //       });
+    //     }
+    //   } else {
+    //     redirectToLogin();
+    //   }
+    //   break;
+
+    case 'matricula':
+      // Muestra el proceso de matrícula estándar
+      if (isAuthenticated()) {
+        renderStudentEnrollment(appContainer);
       } else {
         redirectToLogin();
       }
@@ -112,62 +146,11 @@ async function navigate(view) {
 
     case 'academicPlatform':
       if (isAuthenticated()) {
-        try {
-          const isEnrolled = await validate(userInfo.userId);
-          console.log('Resultado de validate:', isEnrolled);
-
-          if (isEnrolled) {
-            renderAcademicPlatform(appContainer); // Si está matriculado, muestra la plataforma académica.
-          } else {
-            return navigate('matricula'); // Evitar bucles usando return
-          }
-        } catch (error) {
-          console.error('Error al validar la plataforma académica:', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Hubo un problema al validar tu acceso. Intenta más tarde.',
-            confirmButtonText: 'Aceptar',
-          });
-        }
+        renderAcademicPlatform(appContainer);
       } else {
         redirectToLogin();
       }
       break;
-
-    //   case 'matricula':
-    //     // Lógica de matrícula con validación asincrónica
-    //     if (isAuthenticated()) {
-    //       try {
-    //         const isEnrolled = await validate(userInfo.userId);
-    //         console.log('Resultado de isEnrolled:', isEnrolled);
-  
-    //         if (!isEnrolled) {
-    //           renderStudentEnrollment(appContainer); // Si no está matriculado, muestra la vista de matrícula.
-    //         } else {
-    //           return navigate('academicPlatform'); // Evitar bucles usando return
-    //         }
-    //       } catch (error) {
-    //         console.error('Error al validar la matrícula:', error);
-    //         Swal.fire({
-    //           icon: 'error',
-    //           title: 'Error',
-    //           text: 'Hubo un problema al validar tu matrícula. Intenta más tarde.',
-    //           confirmButtonText: 'Aceptar',
-    //         });
-    //       }
-    //     } else {
-    //       redirectToLogin();
-    //     }
-    //     break;
-
-    // case 'academicPlatform':
-    //   if (isAuthenticated()) {
-    //     renderAcademicPlatform(appContainer);
-    //   } else {
-    //     redirectToLogin();
-    //   }
-    //   break;
 
     case 'educacionVirtual':
       renderEducacionVirtual(appContainer); // Nueva vista
@@ -213,8 +196,12 @@ function updateNavbar() {
     navbarContent.innerHTML = `
       <div class="flex items-center space-x-6">
         <!-- Nuevos enlaces de navegación dentro de este div -->
+        ${userInfo.rol == 1 ? `
         <a href="#" id="showCourse" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Mis Cursos</a>
-        
+        ` : ''}
+        ${userInfo.rol == 0 ? `
+        <a href="#" id="" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">DashBoard</a>
+        ` : ''}
         <!-- Este enlace se oculta si el usuario es Admin (rol === 0) -->
         ${userInfo.rol == 1 ? `
           <a href="#" id="showCourseUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Cursos</a>
