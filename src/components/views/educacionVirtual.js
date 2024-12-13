@@ -10,7 +10,7 @@ export default function renderEducacionVirtual() {
 
                 <!-- Columna de Imagen -->
                 <div class="w-full md:w-1/2">
-                <img src="https://via.placeholder.com/500" alt="Imagen de Quiénes Somos" class="w-full h-auto object-cover rounded-lg shadow-lg">
+                <img src="../../sources/custom.jpg" alt="Imagen de Quiénes Somos" class="w-full h-auto object-cover rounded-lg shadow-lg">
                 </div>
             </div>
             </header>
