@@ -201,6 +201,7 @@ function updateNavbar() {
         ` : ''}
         ${userInfo.rol == 0 ? `
         <a href="#" id="" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">DashBoard</a>
+        
         ` : ''}
         <!-- Este enlace se oculta si el usuario es Admin (rol === 0) -->
         ${userInfo.rol == 1 ? `
@@ -247,7 +248,7 @@ function setupNavigationEvents() {
       navigate('login');
     } else if (e.target.id === 'showDashboard') {
       e.preventDefault();
-      navigate('dashboard');
+      navigate('dashboardADMIN');
     } else if (e.target.id === 'showCourse') {
       e.preventDefault();
       navigate('academicPlatform');
