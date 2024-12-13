@@ -267,6 +267,45 @@ function setupNavigationEvents() {
   });
 }
 
+export const infoUserById = async (userId) => {
+  try {
+    console.log(`${userId} desde función validate`);
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('Token no encontrado. No se puede validar al usuario.');
+    }
+
+    const url = new URL(`https://api-skolmi.onrender.com/v1/user/users/${userId}`);
+    const responseUser = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      credentials: 'include'
+    });
+
+    if (!responseUser.ok) {
+      throw new Error(`Error en la solicitud: ${responseUser.statusText}`);
+    }
+
+    const userData = await responseUser.json();
+    console.log(userData[0]);
+    
+
+    if (!Array.isArray(userData) || userData.length === 0) {
+      throw new Error('Datos de usuario no válidos o usuario no encontrado.');
+    }
+  
+    return userData[0];
+  } catch (error) {
+    console.error('Error en validate:', error.message);
+    return false; // Si ocurre un error, redirige al flujo de matrícula.
+  }
+};
+
+
 export const validate = async (userId) => {
   try {
     console.log(`${userId} desde función validate`);

@@ -74,7 +74,7 @@ export async function renderAcademicPlatform(container) {
 
     const userInfo = getUserInfo();
     const mensaje = await mensajito(userInfo.userId);
-  console.log(mensaje);
+    console.log(mensaje);
   
     // Mostrar el mensaje de notificación con el contenido recibido
     const toastElement = document.getElementById('toastMessage');

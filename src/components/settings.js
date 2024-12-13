@@ -1,125 +1,93 @@
-// import { navigate } from '../navegacion/index.js';
-// import { navigate } from '../navegacion';
+// import '../styles/settings.css';
+import { Toast } from 'bootstrap'; // Importa específicamente Toast
+import { navigate } from '../navegacion';
+import { mensajito, getUserInfo,infoUserById } from "../navegacion";
 
 export async function renderSettings(container) {
-    const token = localStorage.getItem('token'); // O usa tu función para obtener el token
-    // if (!token) {
-    //   navigate('login'); // Si no hay token, redirige al login
-    //   return;
-    // }
-  
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if (!userInfo || !userInfo.userId) {
-      navigate('login'); // Si no hay userInfo o userId, redirige al login
-      return;
-    }
-  
-    try {
-      // Realiza la solicitud a la API usando el userId y el token
-      const response = await fetch(`https://api-skolmi.onrender.com/v1/user/users/${userInfo.userId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // Para manejar cookies o sesiones si es necesario
-      });
-  
-      if (!response.ok) {
-        throw new Error('No se pudo obtener la información del usuario');
-      }
-  
-      const data = await response.json();
-  
-      // Verifica si la respuesta tiene la estructura esperada
-      if (!data || !data.nombre) {
-        throw new Error('Datos incompletos del usuario');
-      }
-  
-      // Recuperamos el código de referencia
-      const codigo = data[0]?.codigo || 'No disponible';
-  
-      // Renderiza el perfil con los datos obtenidos
-      container.innerHTML = `
-        <div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
-          <div class="card shadow-lg p-4" style="max-width: 600px; width: 100%; border-radius: 10px;">
-            <div class="text-center mb-4">
-              <img src="../sources/descarga.png" alt="User Icon" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
-              <h3 class="mb-3 text-[#037470]">Perfil de Usuario</h3>
-            </div>
-  
-            <!-- Nombre -->
-            <div class="mb-3">
-              <label for="profileName" class="form-label text-[#037470]">Nombre</label>
-              <input type="text" id="profileName" class="form-control border-[#037470] focus:ring-[#037470]" value="${data.nombre}" disabled>
-            </div>
-  
-            <!-- Correo Electrónico -->
-            <div class="mb-3">
-              <label for="profileEmail" class="form-label text-[#037470]">Correo Electrónico</label>
-              <input type="email" id="profileEmail" class="form-control border-[#037470] focus:ring-[#037470]" value="${data.correo}" disabled>
-            </div>
-  
-            <!-- Código de Referencia -->
-            <div class="mb-3">
-              <label for="profileReferralCode" class="form-label text-[#037470]">Código de Referencia</label>
-              <input type="text" id="profileReferralCode" class="form-control border-[#037470] focus:ring-[#037470]" value="${codigo}" disabled>
-            </div>
-  
-            <!-- Teléfono -->
-            <div class="mb-3">
-              <label for="profilePhone" class="form-label text-[#037470]">Teléfono</label>
-              <input type="text" id="profilePhone" class="form-control border-[#037470] focus:ring-[#037470]" value="${data.telefono}" disabled>
-            </div>
-  
-            <!-- Fecha de Registro -->
-            <div class="mb-3">
-              <label for="profileRegisterDate" class="form-label text-[#037470]">Fecha de Registro</label>
-              <input type="text" id="profileRegisterDate" class="form-control border-[#037470] focus:ring-[#037470]" value="${new Date(data.fecha_registro).toLocaleDateString()}" disabled>
-            </div>
-  
-            <!-- Estado del Usuario -->
-            <div class="mb-3">
-              <label for="profileStatus" class="form-label text-[#037470]">Estado</label>
-              <input type="text" id="profileStatus" class="form-control border-[#037470] focus:ring-[#037470]" value="${data.estado_usuario === 1 ? 'Activo' : 'Inactivo'}" disabled>
-            </div>
-  
-            <!-- Código -->
-            <div class="mb-3">
-              <label for="profileCode" class="form-label text-[#037470]">Código</label>
-              <input type="text" id="profileCode" class="form-control border-[#037470] focus:ring-[#037470]" value="${data.codigo}" disabled>
-            </div>
-  
-            <!-- Rol -->
-            <div class="mb-3">
-              <label for="profileRole" class="form-label text-[#037470]">Rol</label>
-              <input type="text" id="profileRole" class="form-control border-[#037470] focus:ring-[#037470]" value="${data.id_rol === 1 ? 'Admin' : 'Usuario'}" disabled>
-            </div>
-  
-            <!-- Curso -->
-            <div class="mb-3">
-              <label for="profileCourse" class="form-label text-[#037470]">Curso Asignado</label>
-              <input type="text" id="profileCourse" class="form-control border-[#037470] focus:ring-[#037470]" value="${data.id_curso ? `Curso ID: ${data.id_curso}` : 'No asignado'}" disabled>
-            </div>
-  
-            <!-- Botón de Editar Perfil -->
-            <div class="d-grid gap-2 mt-4">
-              <button type="button" id="editProfileButton" class="btn" style="background-color: #ff8c00; color: white;">Editar Perfil</button>
-            </div>
-  
-            <!-- Botón de Guardar Cambios -->
-            <div class="d-grid gap-2 mt-3" style="display: none;" id="saveChangesButtonContainer">
-              <button type="submit" class="btn" style="background-color: #037470; color: white;">Guardar Cambios</button>
-            </div>
-  
-            <div id="errorMessage" class="alert alert-danger text-center" style="display: none;"></div> <!-- Contenedor para el mensaje de error -->
-            <div id="successMessage" class="alert alert-success text-center" style="display: none;"></div> <!-- Contenedor para el mensaje de éxito -->
-          </div>
+  container.innerHTML = `
+    <div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+      <div class="card shadow-lg p-4" style="max-width: 500px; width: 100%; border-radius: 10px;">
+        <div class="text-center mb-4">
+          <h3 class="mb-3 text-[#037470]">Configuración</h3> <!-- Título con color principal -->
         </div>
-      `;
-    } catch (error) {
-      console.error('Error al obtener la información del usuario:', error);
-      navigate('login'); // Redirige al login si hubo un error
-    }
-  }
+
+        <!-- Información del Usuario -->
+        <div class="mb-3">
+          <label class="form-label text-[#037470]">Nombre</label>
+          <p id="settingsName" class="form-control-plaintext">Cargando...</p> <!-- Nombre del usuario (por defecto "Cargando...") -->
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-[#037470]">Correo Electrónico</label>
+          <p id="settingsEmail" class="form-control-plaintext">Cargando...</p> <!-- Correo del usuario (por defecto "Cargando...") -->
+        </div>
+
+        <!-- Botón Referir -->
+        <div class="d-grid gap-2 mt-4">
+          <button id="referButton" class="btn" style="background-color: #037470; color: white;">Referir</button>
+        </div>
+
+        <!-- Botón para editar configuración -->
+        <div class="d-grid gap-2 mt-3">
+          <button id="editButton" class="btn" style="background-color: #ff8c00; color: white;">Editar Configuración</button>
+        </div>
+
+        <!-- Mensajes de éxito y error -->
+        <div id="successMessage" class="alert alert-success text-center" style="display: none;"></div>
+        <div id="errorMessage" class="alert alert-danger text-center" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Toast Message -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+      <div id="toastMessage" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <img src="https://via.placeholder.com/20" class="rounded me-2" alt="...">
+          <strong class="me-auto">Notificación</strong>
+          <small>Ahora</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastBody">
+          Cargando mensaje...
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Obtener información del usuario
+  const userInfo = await getUserInfo(); // Supongo que esta función obtiene los datos del usuario desde la base de datos o API
+  const mensaje = await mensajito(userInfo.userId); // Llamada para obtener mensaje adicional del usuario
+  const infoUser = await infoUserById(userInfo.userId)
+  // Mostrar los datos del usuario en la vista
+  const settingsName = document.getElementById('settingsName');
+  const settingsEmail = document.getElementById('settingsEmail');
+
+
+
+  console.log(infoUser);
   
+
+  settingsName.textContent = infoUser.nombre || "Nombre no disponible"; // Mostrar el nombre o un mensaje si no está disponible
+  settingsEmail.textContent = infoUser.correo || "Correo no disponible"; // Mostrar el correo o un mensaje si no está disponible
+
+  // Mostrar el mensaje de notificación con el contenido recibido
+  const toastElement = document.getElementById('toastMessage');
+  const toastBody = document.getElementById('toastBody');
+  toastBody.textContent = mensaje;
+
+  const toast = new Toast(toastElement);
+  toast.show();
+
+  // Lógica para los botones
+  const referButton = document.getElementById('referButton');
+  referButton.addEventListener('click', () => {
+    // Lógica para el botón "Referir"
+    alert("Funcionalidad de referir no implementada aún.");
+  });
+
+  const editButton = document.getElementById('editButton');
+  editButton.addEventListener('click', () => {
+    // Lógica para el botón de edición (navegar a una vista de edición)
+    navigate('editSettings');
+  });
+}
