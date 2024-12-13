@@ -1,4 +1,4 @@
-import { getUserInfo, navigate } from "../navegacion";
+import { getUserInfo, navigate, validate } from "../navegacion";
 
 export function renderLogin(container) {
   container.innerHTML = `
@@ -86,12 +86,20 @@ export function renderLogin(container) {
           if (userInfo.rol === 0) {
             navigate('dashboard'); // Admin Dashboard
           } else {
-            if (userInfo.rol == 1) {  
-              // Si el usuario está matriculado, carga la academicPlatform
-              navigate('academicPlatform');
-            } else {
-              // Carga el dashboard o el formulario de matrícula
-              navigate('matricula');
+            try {
+              const isEnrolled = await validate(userInfo.userId); // Usa await aquí
+              console.log(isEnrolled);
+              
+              if (isEnrolled) {
+                console.log('academic');
+                navigate('academicPlataform'); // Redirige a la plataforma si está matriculado.
+              } else {
+                navigate('matricula'); // Redirige a la matrícula si no está matriculado.
+                console.log('matricula');                
+              }
+            } catch (error) {
+              console.error('Error al validar el login:', error);
+              alert('Hubo un problema al validar tu acceso. Intenta más tarde.');
             }
           }
         } else {
