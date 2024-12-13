@@ -69,7 +69,7 @@ function navigate(view) {
   const userInfo = getUserInfo();
 
   // Recuperar fromRegister desde localStorage
-  const fromRegister = localStorage.getItem('fromRegister') === 'true';
+  // const fromRegister = localStorage.getItem('fromRegister') === 'true';
 
   // Lógica de navegación según la vista
   switch (view) {
@@ -90,19 +90,19 @@ function navigate(view) {
           title: 'Acceso denegado',
           text: 'No tienes permisos para ver esta página.',
           confirmButtonText: 'Aceptar',
-        }).then(() => navigate('home'));
+        }).then(() => navigate('academicPlatform'));
       }
       break;
 
     case 'matricula':
-      if (fromRegister) {
-        // Si viene del registro, redirige a matrícula
-        renderMatricula(appContainer);
-        localStorage.removeItem('fromRegister'); // Limpiar después de usarlo
-      } else {
-        // Si no viene del registro, mostrar el proceso normal de matrícula
-        renderStudentEnrollment(appContainer);
-      }
+      // if (fromRegister) {
+      //   // Si viene del registro, redirige a matrícula
+      //   renderMatricula(appContainer);
+      //   localStorage.removeItem('fromRegister'); // Limpiar después de usarlo
+      // } else {
+      //   // Si no viene del registro, mostrar el proceso normal de matrícula
+      //   renderStudentEnrollment(appContainer);
+      // }
       break;
 
     case 'academicPlatform':
@@ -309,42 +309,29 @@ document.addEventListener('click', (e) => {
 // Inicialización
 function initApp() {
   const userInfo = getUserInfo();
-  const fromRegister = localStorage.getItem('fromRegister');
-
-  console.log('fromRegister:', fromRegister); // Verificación en consola
 
   if (isAuthenticated()) {
-    console.log('Usuario autenticado');
     if (userInfo?.rol === 0) {
-      console.log('Rol de Administrador');
       // Rol de Administrador
-      navigate('dashboard'); 
+      navigate('dashboard'); // Se asegura de que se llame el dashboard correcto
     } else {
-      if (userInfo.rol == 1) {
-        console.log("1: Usuario matriculado");
-        // Si el usuario está matriculado, carga la academicPlatform
-        navigate('academicPlatform');
-      } else {
-        // Si el usuario vino del registro, redirige a matricula
-        if (fromRegister === 'true') {
-          console.log("2: Vino del registro, redirigiendo a matricula");
-          navigate('matricula');
-          localStorage.removeItem('fromRegister'); // Limpia el estado
-        } else {
-          console.log("3: No vino del registro, redirigiendo a educacionVirtual");
-          navigate('educacionVirtual');
-        }
-      }
+        if (userInfo.rol == 1) {
+            // Si el usuario está matriculado, carga la academicPlatform
+            navigate('academicPlatform');
+          } else {
+            // Carga el dashboard o el formulario de matrícula
+            navigate('matricula');
+          }
     }
   } else {
     // Usuario no autenticado
-    console.log('Usuario no autenticado, redirigiendo a educacionVirtual');
     navigate('educacionVirtual');
   }
 
   setupNavigationEvents();
   updateNavbar();
 }
+
 
 
 

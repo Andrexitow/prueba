@@ -93,12 +93,12 @@ export function renderRegister(container) {
         showSuccessMessage('¡Registro exitoso! Ahora puedes iniciar sesión.');
 
         // Almacenar en localStorage que vino del registro
-        localStorage.setItem('fromRegister', 'true');
+        // localStorage.setItem('fromRegister', 'true');
 
         // Redirigir al login después de un tiempo
         setTimeout(() => {
           // Ahora estás pasando un objeto con la propiedad fromRegister
-          localStorage.setItem('fromRegister', 'true');
+          // localStorage.setItem('fromRegister', 'true');
           navigate('login');
         }, 2000);
       } else {
