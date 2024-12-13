@@ -46,83 +46,75 @@ function isAuthenticated() {
 
 
 // Función de navegación
-function navigate(view) {
-  appContainer.innerHTML = '';
-  const redirectToLogin = () => {
-    Swal.fire({
-      icon: 'error',
-      title: 'No estás autenticado',
-      text: 'Redirigiendo al login...',
-      confirmButtonText: 'Aceptar',
-    }).then(() => {
-      navigate('login');
-    });
-  };
+async function navigate(view) {
+  appContainer.innerHTML = ''; // Limpiar el contenedor
 
+  // Renderiza la vista según la navegación
   const userInfo = getUserInfo();
 
-  switch (view) {
-    case 'login':
-      renderLogin(appContainer);
-      break;
+  if (view === 'login') {
+    renderLogin(appContainer);
+  } else if (view === 'register') {
+    renderRegister(appContainer);
+  } else if (view === 'dashboard') {
+    if (isAuthenticated() && userInfo?.rol === 0) {
+      renderDashboard(appContainer);
+    } else {
+      alert('Acceso denegado. No tienes permisos para ver esta página.');
+      return navigate('home'); // Evitar bucles usando return
+    }
+  } else if (view === 'matricula') {
+    if (isAuthenticated()) {
+      try {
+        const isEnrolled = await validate(userInfo.userId);
+        console.log('Resultado de isEnrolled:', isEnrolled);
 
-    case 'register':
-      renderRegister(appContainer);
-      break;
-
-    case 'dashboard':
-      if (isAuthenticated() && userInfo?.rol === 0) {
-        renderDashboard(appContainer);
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Acceso denegado',
-          text: 'No tienes permisos para ver esta página.',
-          confirmButtonText: 'Aceptar',
-        }).then(() => navigate('academicPlatform'));
-      }
-      break;
-
-    case 'matricula':
-      // Muestra el proceso de matrícula estándar
-      renderStudentEnrollment(appContainer);
-      break;
-
-
-    case 'academicPlatform':
-      if (isAuthenticated()) {
-        renderAcademicPlatform(appContainer);
-      } else {
-        redirectToLogin();
-      }
-      break;
-
-    case 'educacionVirtual':
-      renderEducacionVirtual(appContainer);
-      break;
-
-    case 'matriculacion':
-      if (isAuthenticated()) {
-        renderMatricula(appContainer);
-      } else {
-        redirectToLogin();
-      }
-      break;
-    
-      case 'settings':
-        if (isAuthenticated()) {
-          renderSettings(appContainer);
+        if (!isEnrolled) {
+          renderStudentEnrollment(appContainer); // Si no está matriculado, muestra la vista de matrícula.
         } else {
-          redirectToLogin();
+          return navigate('academicPlataform'); // Evitar bucles usando return
         }
-        break;
+      } catch (error) {
+        console.error('Error al validar la matrícula:', error);
+        alert('Hubo un problema al validar tu matrícula. Intenta más tarde.');
+      }
+    } else {
+      alert('No estás autenticado. Redirigiendo al login...');
+      return navigate('login'); // Evitar bucles usando return
+    }
+  } else if (view === 'academicPlataform') {
+    if (isAuthenticated()) {
+      try {
+        const isEnrolled = await validate(userInfo.userId);
+        console.log('Resultado de validate:', isEnrolled);
 
-    default:
-      renderHome(appContainer);
-      break;
+        if (isEnrolled) {
+          renderAcademicPlatform(appContainer); // Si está matriculado, muestra la plataforma académica.
+        } else {
+          return navigate('matricula'); // Evitar bucles usando return
+        }
+      } catch (error) {
+        console.error('Error al validar la plataforma académica:', error);
+        alert('Hubo un problema al validar tu acceso. Intenta más tarde.');
+      }
+    } else {
+      alert('No estás autenticado. Redirigiendo al login...');
+      return navigate('login'); // Evitar bucles usando return
+    }
+  } else if (view === 'educacionVirtual') { // NUEVA VISTA -------------
+    renderEducacionVirtual(appContainer);
+  } else if (view === 'matriculacion') {
+    if (isAuthenticated()) {
+      renderMatricula(appContainer);
+    } else {
+      alert('No estás autenticado. Redirigiendo al login...');
+      return navigate('login'); // Evitar bucles usando return
+    }
+  } else {
+    renderHome(appContainer);
   }
 
-  // Actualizar la barra de navegación
+  // Actualizar navbar
   updateNavbar();
 }
 
@@ -207,7 +199,44 @@ function setupNavigationEvents() {
   });
 }
 
+export const validate = async (userId) => {
+  try {
+    console.log(`${userId} desde función validate`);
+    const token = localStorage.getItem('token');
 
+    if (!token) {
+      throw new Error('Token no encontrado. No se puede validar al usuario.');
+    }
+
+    const url = new URL(`https://api-skolmi.onrender.com/v1/user/users/${userId}`);
+    const responseUser = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      credentials: 'include'
+    });
+
+    if (!responseUser.ok) {
+      throw new Error(`Error en la solicitud: ${responseUser.statusText}`);
+    }
+
+    const userData = await responseUser.json();
+    console.log(userData[0]);
+    
+
+    if (!Array.isArray(userData) || userData.length === 0) {
+      throw new Error('Datos de usuario no válidos o usuario no encontrado.');
+    }
+
+    console.log(`Código del usuario: ${userData[0].codigo}`);
+    return userData[0].codigo !== null;
+  } catch (error) {
+    console.error('Error en validate:', error.message);
+    return false; // Si ocurre un error, redirige al flujo de matrícula.
+  }
+};
 // Función para obtener el código de referencia desde el servidor
 const getReferralCode = async () => {
   const token = localStorage.getItem('token'); // Obtener el token del usuario desde localStorage
