@@ -8,6 +8,7 @@ import { renderMatricula } from '../components/matriculacion.js';
 import { renderSettings } from '../components/settings.js';
 import { renderAcademicPlatform } from '../components/academicPlataform.js';
 import renderEducacionVirtual from '../components/views/educacionVirtual.js';
+import { renderReferidosUser } from '../components/listReferidosUser.js';
 import { renderHome } from '../components/home.js';
 
 
@@ -43,7 +44,7 @@ function getToken() {
 
 function isAuthenticated() {
   const token = getToken();
-  return !!token; 
+  return !!token;
 }
 
 
@@ -74,7 +75,7 @@ async function navigate(view) {
       renderRegister(appContainer);
       break;
 
-    case 'dashboard': 
+    case 'dashboard':
       if (isAuthenticated() && userInfo?.rol === 0) {
         renderDashboard(appContainer);
       } else {
@@ -87,16 +88,21 @@ async function navigate(view) {
       }
       break;
 
-      case 'dashboardADMIN': 
+    case 'dashboardADMIN':
       if (isAuthenticated() && userInfo?.rol === 0) {
         renderDashboard(appContainer);
-      } 
+      }
       break;
 
-      case 'listReferido': 
+    case 'listReferido':
       if (isAuthenticated() && userInfo?.rol === 0) {
         renderReferidos(appContainer);
-      } 
+      }
+      break;
+    case 'listReferidosUser':
+      if (isAuthenticated() && userInfo?.rol === 1) {
+        renderReferidosUser(appContainer);
+      }
       break;
 
     case 'matricula':
@@ -166,9 +172,17 @@ function updateNavbar() {
         ${userInfo.rol == 0 ? `
         <a href="#" id="showDashboardADMIN" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">DashBoard</a>
         ` : ''}
+
+
         ${userInfo.rol == 0 ? `
           <a href="#" id="showReferidos" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Referidos</a>
           ` : ''}
+        ${userInfo.rol == 1 ? `
+          <a href="#" id="showReferidosUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Referidos</a>
+          ` : ''}
+
+
+
         <!-- Este enlace se oculta si el usuario es Admin (rol === 0) -->
         ${userInfo.rol == 1 ? `
           <a href="#" id="showCourseUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Cursos</a>
@@ -221,7 +235,10 @@ function setupNavigationEvents() {
     } else if (e.target.id === 'showReferidos') {
       e.preventDefault();
       navigate('listReferido');
-    } else if (e.target.id === 'showCourse') {
+    } else if (e.target.id === 'showReferidosUser') {
+      e.preventDefault();
+      navigate('listReferidosUser');
+    }else if (e.target.id === 'showCourse') {
       e.preventDefault();
       navigate('academicPlatform');
     } else if (e.target.id === 'showMatricula') {
@@ -265,12 +282,12 @@ export const infoUserById = async (userId) => {
 
     const userData = await responseUser.json();
     console.log(userData[0]);
-    
+
 
     if (!Array.isArray(userData) || userData.length === 0) {
       throw new Error('Datos de usuario no válidos o usuario no encontrado.');
     }
-  
+
     return userData[0];
   } catch (error) {
     console.error('Error en validate:', error.message);
@@ -304,7 +321,7 @@ export const validate = async (userId) => {
 
     const userData = await responseUser.json();
     console.log(userData[0]);
-    
+
 
     if (!Array.isArray(userData) || userData.length === 0) {
       throw new Error('Datos de usuario no válidos o usuario no encontrado.');
@@ -339,10 +356,10 @@ const getReferralCode = async () => {
     const response = await fetch(`https://api-skolmi.onrender.com/v1/user/users/${userInfo.userId}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`, 
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      credentials: 'include', 
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -350,7 +367,7 @@ const getReferralCode = async () => {
     }
 
     const data = await response.json();
-    const codigo = data[0]?.codigo; 
+    const codigo = data[0]?.codigo;
 
     if (!codigo) {
       throw new Error('No se encontró el código de referencia.');
@@ -382,7 +399,7 @@ const getReferralCode = async () => {
   }
 };
 
-export const  mensajito = async(userId)=>{
+export const mensajito = async (userId) => {
   try {
     console.log(`${userId} desde función mensajito`);
     const token = localStorage.getItem('token');
@@ -407,9 +424,9 @@ export const  mensajito = async(userId)=>{
 
     const userData = await responseUser.json();
     console.log(userData.mensaje);
-    
+
     console.log(`Código del usuario: ${userData.mensaje}`);
-    return userData.mensaje ;
+    return userData.mensaje;
   } catch (error) {
     console.error('Error en validate:', error.message);
     return false; // Si ocurre un error, redirige al flujo de matrícula.
@@ -427,7 +444,7 @@ document.addEventListener('click', (e) => {
 });
 
 function initApp() {
-  const isAuthenticatedUser = isAuthenticated(); 
+  const isAuthenticatedUser = isAuthenticated();
 
   const userInfo = getUserInfo();
 
