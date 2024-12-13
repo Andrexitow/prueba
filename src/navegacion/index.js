@@ -10,6 +10,7 @@ import { renderAcademicPlatform } from '../components/academicPlataform.js';
 import renderEducacionVirtual from '../components/views/educacionVirtual.js';
 import { renderReferidosUser } from '../components/listReferidosUser.js';
 import { renderHome } from '../components/home.js';
+import { renderFormularioIncentivos } from '../components/incentivos.js';
 
 
 const appContainer = document.getElementById('app');
@@ -75,9 +76,9 @@ async function navigate(view) {
       renderRegister(appContainer);
       break;
 
-    case 'dashboard': 
+    case 'dashboard':
       // if (isAuthenticated() && userInfo?.rol === 0) {
-        renderDashboard(appContainer);
+      renderDashboard(appContainer);
       // } else {
       //   Swal.fire({
       //     icon: 'error',
@@ -104,11 +105,15 @@ async function navigate(view) {
         renderReferidosUser(appContainer);
       }
       break;
-
+    case 'incentivos':
+      if (isAuthenticated() && userInfo?.rol === 0) {
+        renderFormularioIncentivos(appContainer);
+      }
+      break;
     case 'matricula':
       // Muestra el proceso de matrícula estándar
       // if (isAuthenticated()) {
-        renderStudentEnrollment(appContainer);
+      renderStudentEnrollment(appContainer);
       // } else {
       //   redirectToLogin();
       // }
@@ -181,13 +186,17 @@ function updateNavbar() {
           <a href="#" id="showReferidosUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Referidos</a>
           ` : ''}
 
+          <!-- Este enlace se oculta si el usuario es Admin (rol === 0) -->
+          ${userInfo.rol == 1 ? `
+            <a href="#" id="showCourseUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Cursos</a>
+          ` : ''}
+          <!-- Este enlace es para Incentivos  -->
+          ${userInfo.rol == 0 ? `
+            <a href="#" id="showIncentivos" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Incentivos</a>
+          ` : ''}
 
 
-        <!-- Este enlace se oculta si el usuario es Admin (rol === 0) -->
-        ${userInfo.rol == 1 ? `
-          <a href="#" id="showCourseUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Cursos</a>
-        ` : ''}
-        
+          
         <a href="#" id="showSettings" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Perfil</a>
 
         <!-- Información de usuario y botón de logout -->
@@ -238,7 +247,10 @@ function setupNavigationEvents() {
     } else if (e.target.id === 'showReferidosUser') {
       e.preventDefault();
       navigate('listReferidosUser');
-    }else if (e.target.id === 'showCourse') {
+    }else if (e.target.id === 'showIncentivos') {
+      e.preventDefault();
+      navigate('incentivos');
+    } else if (e.target.id === 'showCourse') {
       e.preventDefault();
       navigate('academicPlatform');
     } else if (e.target.id === 'showMatricula') {
