@@ -1,6 +1,8 @@
 import { renderLogin } from '../components/login.js';
 import { renderRegister } from '../components/register.js';
 import { renderDashboard } from '../components/dashboardADMIN.js';
+
+import { renderReferidos } from '../components/listReferido.js';
 import { renderStudentEnrollment } from '../components/matricula.js';
 import { renderMatricula } from '../components/matriculacion.js';
 import { renderSettings } from '../components/settings.js';
@@ -72,7 +74,7 @@ async function navigate(view) {
       renderRegister(appContainer);
       break;
 
-    case 'dashboard':
+    case 'dashboard': 
       if (isAuthenticated() && userInfo?.rol === 0) {
         renderDashboard(appContainer);
       } else {
@@ -85,55 +87,17 @@ async function navigate(view) {
       }
       break;
 
-      // case 'matricula':
-      // if (isAuthenticated()) {
-      //   try {
-      //     const isEnrolled = await validate(userInfo.userId);
-      //     console.log('Resultado de isEnrolled:', isEnrolled);
+      case 'dashboardADMIN': 
+      if (isAuthenticated() && userInfo?.rol === 0) {
+        renderDashboard(appContainer);
+      } 
+      break;
 
-      //     if (!isEnrolled) {
-      //       renderStudentEnrollment(appContainer); // Si no está matriculado, muestra la vista de matrícula.
-      //     } else {
-      //       return navigate('academicPlataform'); // Evitar bucles usando return
-      //     }
-      //   } catch (error) {
-      //     console.error('Error al validar la matrícula:', error);
-      //     Swal.fire({
-      //       icon: 'error',
-      //       title: 'Error',
-      //       text: 'Hubo un problema al validar tu matrícula. Intenta más tarde.',
-      //       confirmButtonText: 'Aceptar',
-      //     });
-      //   }
-      // } else {
-      //   redirectToLogin();
-      // }
-      // break;
-
-    // case 'academicPlatform':
-    //   if (isAuthenticated()) {
-    //     try {
-    //       const isEnrolled = await validate(userInfo.userId);
-    //       console.log('Resultado de validate:', isEnrolled);
-
-    //       if (isEnrolled) {
-    //         renderAcademicPlatform(appContainer); // Si está matriculado, muestra la plataforma académica.
-    //       } else {
-    //         return navigate('matricula'); // Evitar bucles usando return
-    //       }
-    //     } catch (error) {
-    //       console.error('Error al validar la plataforma académica:', error);
-    //       Swal.fire({
-    //         icon: 'error',
-    //         title: 'Error',
-    //         text: 'Hubo un problema al validar tu acceso. Intenta más tarde.',
-    //         confirmButtonText: 'Aceptar',
-    //       });
-    //     }
-    //   } else {
-    //     redirectToLogin();
-    //   }
-    //   break;
+      case 'listReferido': 
+      if (isAuthenticated() && userInfo?.rol === 0) {
+        renderReferidos(appContainer);
+      } 
+      break;
 
     case 'matricula':
       // Muestra el proceso de matrícula estándar
@@ -200,8 +164,11 @@ function updateNavbar() {
         <a href="#" id="showCourse" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Mis Cursos</a>
         ` : ''}
         ${userInfo.rol == 0 ? `
-        <a href="#" id="" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">DashBoard</a>
+        <a href="#" id="showDashboardADMIN" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">DashBoard</a>
         ` : ''}
+        ${userInfo.rol == 0 ? `
+          <a href="#" id="showReferidos" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Referidos</a>
+          ` : ''}
         <!-- Este enlace se oculta si el usuario es Admin (rol === 0) -->
         ${userInfo.rol == 1 ? `
           <a href="#" id="showCourseUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Cursos</a>
@@ -248,6 +215,12 @@ function setupNavigationEvents() {
     } else if (e.target.id === 'showDashboard') {
       e.preventDefault();
       navigate('dashboard');
+    } else if (e.target.id === 'showDashboardADMIN') {
+      e.preventDefault();
+      navigate('dashboardADMIN');
+    } else if (e.target.id === 'showReferidos') {
+      e.preventDefault();
+      navigate('listReferido');
     } else if (e.target.id === 'showCourse') {
       e.preventDefault();
       navigate('academicPlatform');
