@@ -41,12 +41,11 @@ export async function renderAcademicPlatform(container) {
             <div class="row">
               <div class="col-md-4 mb-4">
                 <div class="card">
-                  <img src="https://via.placeholder.com/150" class="card-img-top" alt="Curso 1">
+                  <img src="./public/sources/primaria.jpg" class="card-img-top" alt="Curso 1">
                   <div class="card-body">
                     <h5 class="card-title">Primaria</h5>
                     <p class="card-text">Descripción breve del curso.</p>
                     <button class="btn btn-primary">Acceder</button>
-                    <button id="referButton" class="btn btn-secondary">Referir</button>
                   </div>
                 </div>
               </div>
@@ -57,7 +56,7 @@ export async function renderAcademicPlatform(container) {
           <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
             <div id="toastMessage" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
               <div class="toast-header">
-                <img src="https://via.placeholder.com/20" class="rounded me-2" alt="...">
+                <img src="./public/sources/descarga.png" class="rounded me-2" alt="..." style="width: 30px; height: 30px;">
                 <strong class="me-auto">Notificación</strong>
                 <small>Ahora</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>

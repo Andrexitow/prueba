@@ -14,7 +14,7 @@ export function renderStudentEnrollment(container) {
         <!-- Tarjeta 1: Primaria -->
         <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-2xl transition transform hover:scale-105">
           <div class="h-48 bg-gray-200">
-            <img src="https://via.placeholder.com/300x200?text=Primaria" alt="Matrícula Primaria" class="object-cover w-full h-full">
+            <img src="./public/sources/primaria.jpg" alt="Matrícula Primaria" class="object-cover w-full h-full">
           </div>
           <div class="p-6">
             <h5 class="text-xl font-semibold text-[#037470]">Primaria</h5>
@@ -29,7 +29,7 @@ export function renderStudentEnrollment(container) {
         <!-- Tarjeta 2: Preparatoria -->
         <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-2xl transition transform hover:scale-105">
           <div class="h-48 bg-gray-200">
-            <img src="https://via.placeholder.com/300x200?text=Preparatoria" alt="Matrícula Preparatoria" class="object-cover w-full h-full">
+            <img src="./public/sources/secundaria.jpg" alt="Matrícula Preparatoria" class="object-cover w-full h-full">
           </div>
           <div class="p-6">
             <h5 class="text-xl font-semibold text-[#037470]">Preparatoria</h5>
@@ -44,7 +44,7 @@ export function renderStudentEnrollment(container) {
         <!-- Tarjeta 3: Bachillerato -->
         <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-2xl transition transform hover:scale-105">
           <div class="h-48 bg-gray-200">
-            <img src="https://via.placeholder.com/300x200?text=Bachillerato" alt="Matrícula Bachillerato" class="object-cover w-full h-full">
+            <img src="./public/sources/bachiller.jpg" alt="Matrícula Bachillerato" class="object-cover w-full h-full">
           </div>
           <div class="p-6">
             <h5 class="text-xl font-semibold text-[#037470]">Bachillerato</h5>

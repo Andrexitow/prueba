@@ -61,30 +61,31 @@ export default function renderEducacionVirtual() {
             <h2 class="text-2xl font-semibold text-center mb-8">Programas de Educación Virtual</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 <div class="card shadow-lg bg-white rounded-lg">
-                <img src="https://via.placeholder.com/150" class="card-img-top rounded-t-lg" alt="Program Image">
-                <div class="card-body p-4 text-center">
-                    <h5 class="text-xl font-semibold">Finanzas</h5>
-                </div>
-                </div>
-                <div class="card shadow-lg bg-white rounded-lg">
-                <img src="https://via.placeholder.com/150" class="card-img-top rounded-t-lg" alt="Program Image">
-                <div class="card-body p-4 text-center">
-                    <h5 class="text-xl font-semibold">Marketing</h5>
-                </div>
+                    <img src="./public/sources/finanzas.jpg" class="card-img-top rounded-t-lg object-cover w-full h-48" alt="Program Image">
+                    <div class="card-body p-4 text-center">
+                        <h5 class="text-xl font-semibold">Finanzas</h5>
+                    </div>
                 </div>
                 <div class="card shadow-lg bg-white rounded-lg">
-                <img src="https://via.placeholder.com/150" class="card-img-top rounded-t-lg" alt="Program Image">
-                <div class="card-body p-4 text-center">
-                    <h5 class="text-xl font-semibold">Desarrollo</h5>
-                </div>
+                    <img src="./public/sources/marketing.jpg" class="card-img-top rounded-t-lg object-cover w-full h-48" alt="Program Image">
+                    <div class="card-body p-4 text-center">
+                        <h5 class="text-xl font-semibold">Marketing</h5>
+                    </div>
                 </div>
                 <div class="card shadow-lg bg-white rounded-lg">
-                <img src="https://via.placeholder.com/150" class="card-img-top rounded-t-lg" alt="Program Image">
-                <div class="card-body p-4 text-center">
-                    <h5 class="text-xl font-semibold">Diseño</h5>
+                    <img src="./public/sources/programacion.jpg" class="card-img-top rounded-t-lg object-cover w-full h-48" alt="Program Image">
+                    <div class="card-body p-4 text-center">
+                        <h5 class="text-xl font-semibold">Desarrollo</h5>
+                    </div>
                 </div>
+                <div class="card shadow-lg bg-white rounded-lg">
+                    <img src="./public/sources/diseño.jpg" class="card-img-top rounded-t-lg object-cover w-full h-48" alt="Program Image">
+                    <div class="card-body p-4 text-center">
+                        <h5 class="text-xl font-semibold">Diseño</h5>
+                    </div>
                 </div>
             </div>
+
             </section>
 
 
