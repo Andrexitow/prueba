@@ -1,9 +1,12 @@
-// academicPlatform.js
-export function renderAcademicPlatform(container) {
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { Toast } from 'bootstrap'; // Importa específicamente Toast
+import { mensajito, getUserInfo } from "../navegacion";
+
+export async function renderAcademicPlatform(container) {
     container.innerHTML = `
       <div class="d-flex flex-row">
         <!-- Sidebar -->
-  
         <!-- Main Content -->
         <div class="flex-grow-1">
           <!-- Navbar -->
@@ -31,7 +34,7 @@ export function renderAcademicPlatform(container) {
               </form>
             </div>
           </nav>
-  
+
           <!-- Courses Section -->
           <div class="p-4">
             <h3>Mis Cursos</h3>
@@ -49,7 +52,35 @@ export function renderAcademicPlatform(container) {
               </div>
             </div>
           </div>
+
+          <!-- Toast Message -->
+          <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="toastMessage" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <img src="https://via.placeholder.com/20" class="rounded me-2" alt="...">
+                <strong class="me-auto">Notificación</strong>
+                <small>Ahora</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div class="toast-body" id="toastBody">
+                Cargando mensaje...
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     `;
-  }
+
+    const userInfo = getUserInfo();
+    const mensaje = await mensajito(userInfo.userId);
+  console.log(mensaje);
+  
+    // Mostrar el mensaje de notificación con el contenido recibido
+    const toastElement = document.getElementById('toastMessage');
+    const toastBody = document.getElementById('toastBody');
+    toastBody.textContent = mensaje;
+
+    const toast = new Toast(toastElement);
+    toast.show();
+}

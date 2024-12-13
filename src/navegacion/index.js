@@ -370,6 +370,41 @@ const getReferralCode = async () => {
   }
 };
 
+export const  mensajito = async(userId)=>{
+  try {
+    console.log(`${userId} desde función mensajito`);
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('Token no encontrado. No se puede validar al usuario.');
+    }
+
+    const url = new URL(`https://api-skolmi.onrender.com/v1/reportes/referidos/mensaje/${userId}`);
+    const responseUser = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      credentials: 'include'
+    });
+
+    if (!responseUser.ok) {
+      throw new Error(`Error en la solicitud: ${responseUser.statusText}`);
+    }
+
+    const userData = await responseUser.json();
+    console.log(userData.mensaje);
+    
+    console.log(`Código del usuario: ${userData.mensaje}`);
+    return userData.mensaje ;
+  } catch (error) {
+    console.error('Error en validate:', error.message);
+    return false; // Si ocurre un error, redirige al flujo de matrícula.
+  }
+}
+
+
 // Llama a la función getReferralCode cuando se haga clic en el botón referir
 document.addEventListener('click', (e) => {
   if (e.target.id === 'referButton') {
