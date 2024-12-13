@@ -1,53 +1,149 @@
-// components/dashboardADMIN.js
+// Importa Chart.js
 import Chart from "chart.js/auto";
 
+// Renderiza el Dashboard
 export function renderDashboard(container) {
-    container.innerHTML = `
-    <div class="container-fluid">
+  container.innerHTML = `
+    <div class="container mt-5">
       <div class="row">
+        <!-- Cards de datos random -->
+        <div class="col-lg-3">
+          <div id="dataCards" class="mb-4"></div>
+        </div>
 
-
-        <!-- Main content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-
-          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Bienvenido, Administrador</h1>
-          </div>
-
-          <!-- Charts -->
-          <div class="mb-4">
-            <h3>Estadísticas Generales</h3>
-            <canvas id="Grafica" class="shadow rounded" style="background: #f9f9f9; padding: 15px; border-radius: 10px;"></canvas>
-          </div>
-
-          <!-- User List -->
-          <div class="card shadow-sm mt-5">
-            <div class="card-header bg-primary text-white">
-              <h5 class="card-title">Listado de Usuarios</h5>
-            </div>
+        <!-- Gráfica -->
+        <div class="col-lg-9">
+          <h3 class="mb-4">Estadísticas Generales</h3>
+          <div class="card shadow-sm rounded-lg">
             <div class="card-body">
-              <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                  <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Fecha de Registro</th>
-                  </tr>
-                </thead>
-                <tbody id="userList">
-                  <tr>
-                    <td colspan="4" class="text-center">Cargando...</td>
-                  </tr>
-                </tbody>
-              </table>
+              <canvas id="Grafica" class="rounded" style="background: #f8f9fa; padding: 20px;"></canvas>
             </div>
           </div>
-        </main>
+        </div>
+      </div>
+
+      <!-- Tabla de usuarios -->
+      <div class="card shadow-sm mt-5">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title m-0">Listado de Usuarios</h5>
+          <input type="text" id="searchInput" class="form-control form-control-sm w-25" placeholder="Buscar usuario...">
+        </div>
+        <div class="card-body">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Fecha de Registro</th>
+              </tr>
+            </thead>
+            <tbody id="userList">
+              <tr>
+                <td colspan="4" class="text-center">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+          <nav>
+            <ul id="pagination" class="pagination justify-content-center"></ul>
+          </nav>
+        </div>
       </div>
     </div>
   `;
 
+  // Función para obtener datos de la API de reportes
+  async function obtenerDatos() {
+    const respuesta = await fetch("https://api-skolmi.onrender.com/v1/reportes/reporte");
+    const datos = await respuesta.json();
+    return datos;
+  }
+
+  // Generar Cards dinámicamente
+  function generarCards(datos) {
+    const totalReferidos = datos.reduce((acc, item) => acc + item.totalReferidos, 0);
+    const totalConversiones = datos.reduce((acc, item) => acc + item.conversiones, 0);
+    const promedioConversiones = (totalConversiones / datos.length).toFixed(2);
+
+    const cardHTML = `
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="card-title">Total Referidos</h5>
+          <p class="h4 text-primary">${totalReferidos}</p>
+        </div>
+      </div>
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="card-title">Total Conversiones</h5>
+          <p class="h4 text-success">${totalConversiones}</p>
+        </div>
+      </div>
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="card-title">Promedio Conversiones</h5>
+          <p class="h4 text-info">${promedioConversiones}</p>
+        </div>
+      </div>
+    `;
+    document.getElementById("dataCards").innerHTML = cardHTML;
+  }
+
+  // Generar Gráfica
+  async function generarGrafica() {
+    const datos = await obtenerDatos();
+    generarCards(datos);
+
+    const etiquetas = datos.map((item) => item.id_usuario_referidor);
+    const totalReferidos = datos.map((item) => item.totalReferidos);
+    const conversiones = datos.map((item) => item.conversiones);
+    const ctx = document.getElementById("Grafica").getContext("2d");
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: etiquetas,
+        datasets: [
+          {
+            label: "Total Referidos",
+            data: totalReferidos,
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 8,
+            fill: true,
+          },
+          {
+            label: "Conversiones",
+            data: conversiones,
+            backgroundColor: "rgba(153, 102, 255, 0.2)",
+            borderColor: "rgba(153, 102, 255, 1)",
+            borderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 8,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { type: "category" },
+          y: { beginAtZero: true },
+        },
+        plugins: {
+          tooltip: {
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            titleFont: { weight: "bold" },
+            bodyFont: { size: 14 },
+          },
+        },
+        interaction: { mode: "nearest", intersect: false },
+      },
+    });
+  }
+
+  // Fetch y renderizar usuarios con búsqueda y paginación
   async function fetchUsers() {
     try {
       const response = await fetch("https://api-skolmi.onrender.com/v1/user/users");
@@ -59,84 +155,57 @@ export function renderDashboard(container) {
     }
   }
 
-  // Renderizar la lista de usuarios
-  async function renderUserList() {
+  async function renderUserList(page = 1, searchQuery = "") {
     const users = await fetchUsers();
     const userList = document.getElementById("userList");
+    const pagination = document.getElementById("pagination");
 
-    if (users.length === 0) {
-      userList.innerHTML = `
+    const filteredUsers = users.filter((user) =>
+      user.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const usersPerPage = 20;
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    const startIndex = (page - 1) * usersPerPage;
+    const endIndex = startIndex + usersPerPage;
+
+    const currentPageUsers = filteredUsers.slice(startIndex, endIndex);
+
+    userList.innerHTML = currentPageUsers
+      .map(
+        (user) => `
         <tr>
-          <td colspan="5" class="text-center text-danger">No se encontraron usuarios.</td>
-        </tr>
-      `;
-      return;
-    }
-console.log(users);
+          <td>${user.id_usuario}</td>
+          <td>${user.nombre}</td>
+          <td>${user.correo}</td>
+          <td>${new Date(user.fecha_registro).toLocaleDateString()}</td>
+        </tr>`
+      )
+      .join("") ||
+      `<tr><td colspan="4" class="text-center text-danger">No se encontraron usuarios.</td></tr>`;
 
-    userList.innerHTML = ""; // Limpiar la tabla
-    users.forEach(user => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${user.id_usuario}</td>
-        <td>${user.nombre}</td>
-        <td>${user.correo}</td>        
-        <td>${new Date(user.fecha_registro).toLocaleDateString()}</td>
-      `;
-      userList.appendChild(row);
+    pagination.innerHTML = Array.from({ length: totalPages }, (_, i) => i + 1)
+      .map(
+        (pageNum) => `
+        <li class="page-item ${page === pageNum ? "active" : ""}">
+          <a class="page-link" href="#">${pageNum}</a>
+        </li>`
+      )
+      .join("");
+
+    pagination.querySelectorAll(".page-link").forEach((link, index) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        renderUserList(index + 1, searchQuery);
+      });
     });
   }
 
-  // Configurar la gráfica
-  async function obtenerDatos() {
-    const respuesta = await fetch(
-       "https://api-skolmi.onrender.com/v1/reportes/reporte"
-    );
-  //   const respuesta = await fetch(
-  //     "http://localhost:1235/v1/reportes/reporte"
-  // );
-    const datos = await respuesta.json();
-    return datos;
-}
+  document.getElementById("searchInput").addEventListener("input", (e) => {
+    const searchQuery = e.target.value;
+    renderUserList(1, searchQuery);
+  });
 
-async function generarGrafica() {
-    const datos = await obtenerDatos();
-    const etiquetas = datos.map((item) => item.id_usuario_referidor);
-    const totalReferidos = datos.map((item) => item.totalReferidos);
-    const conversiones = datos.map((item) => item.conversiones);
-    const ctx = document.getElementById("Grafica").getContext("2d");
-    new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: etiquetas,
-            datasets: [
-                {
-                    label: "Total Referidos",
-                    data: totalReferidos.map((val, index) => ({
-                        x: index,
-                        y: val,
-                    })),
-                    backgroundColor: "rgba(75, 192, 192, 0.2)",
-                    borderColor: "rgba(75, 192, 192, 1)",
-                    borderWidth: 1,
-                },
-                {
-                    label: "Conversiones",
-                    data: conversiones.map((val, index) => ({
-                        x: index,
-                        y: val,
-                    })),
-                    backgroundColor: "rgba(153, 102, 255, 0.2)",
-                    borderColor: "rgba(153, 102, 255, 1)",
-                    borderWidth: 1,
-                },
-            ],
-        },
-        options: { scales: { x: { type: "linear", position: "bottom" } } },
-    });
-}
-
-  // Inicializar la tabla y la gráfica
   renderUserList();
-  generarGrafica()
+  generarGrafica();
 }

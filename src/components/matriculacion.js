@@ -1,5 +1,6 @@
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import { getUserInfo, navigate } from "../navegacion";
+import Swal from 'sweetalert2';
 
 export const renderMatricula = (container) => {
     container.innerHTML = `
@@ -109,47 +110,69 @@ export const renderMatricula = (container) => {
       </div>
     `;
   
-    const matriculaForm = document.getElementById('matriculaForm');
-    matriculaForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-        
-      const infoUser = getUserInfo()
-      console.log(infoUser.userId);
-      
-      const data = {
-        userId: infoUser.userId, 
-        direccion: document.getElementById('direccion').value,
-        estado_pago: document.getElementById('estadoPago').value,
-        sexo: document.getElementById('sexo').value,
-        estado_civil: document.getElementById('estadoCivil').value,
-        documento: document.getElementById('documento').value,
-        nivel_academico: document.getElementById('nivelAcademico').value,
-        anio_anterior: document.getElementById('anioAnterior').value,
-        fecha_nacimiento: document.getElementById('fechaNacimiento').value,
-        tipo_sangre: document.getElementById('tipoSangre').value,
-        tutor: document.getElementById('tutor').value,
-        tel_tutor: document.getElementById('telTutor').value,
-        relacion_tutor: document.getElementById('relacionTutor').value,
-        municipio: document.getElementById('municipio').value,
-        departamento: document.getElementById('departamento').value,
-        codigo: document.getElementById('codigoReferido').value
-      };
-  
-      try {
-        const response = await fetch('https://api-skolmi.onrender.com/v1/dashboard/matriculas', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-  
-        if (response.ok) {
-          alert('Matrícula guardada correctamente.');
-        } else {
-          const error = await response.json();
-          alert(`Error: ${error.message}`);
+    const matriculaForm = document.getElementById("matriculaForm");
+
+  matriculaForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const infoUser = getUserInfo();
+
+    const data = {
+      userId: infoUser.userId,
+      direccion: document.getElementById("direccion").value,
+      estado_pago: document.getElementById("estadoPago").value,
+      sexo: document.getElementById("sexo").value,
+      estado_civil: document.getElementById("estadoCivil").value,
+      documento: document.getElementById("documento").value,
+      nivel_academico: document.getElementById("nivelAcademico").value,
+      anio_anterior: document.getElementById("anioAnterior").value,
+      fecha_nacimiento: document.getElementById("fechaNacimiento").value,
+      tipo_sangre: document.getElementById("tipoSangre").value,
+      tutor: document.getElementById("tutor").value,
+      tel_tutor: document.getElementById("telTutor").value,
+      relacion_tutor: document.getElementById("relacionTutor").value,
+      municipio: document.getElementById("municipio").value,
+      departamento: document.getElementById("departamento").value,
+      codigo: document.getElementById("codigoReferido").value,
+    };
+
+    try {
+      const response = await fetch(
+        "https://api-skolmi.onrender.com/v1/dashboard/matriculas",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
         }
-      } catch (error) {
-        alert('Hubo un problema con el servidor. Intenta más tarde.');
+      );
+
+      if (response.ok) {
+        // SweetAlert de éxito
+        Swal.fire({
+          icon: "success",
+          title: "¡Matriculado con éxito!",
+          text: "El estudiante ha sido matriculado exitosamente.",
+          confirmButtonText: "Aceptar",
+        }).then(() => {
+          // Redirige después de cerrar el SweetAlert
+          navigate("academicPlatform");
+        });
+      } else {
+        const error = await response.json();
+        Swal.fire({
+          icon: "error",
+          title: "Error al matricular",
+          text: `Error: ${error.message}`,
+          confirmButtonText: "Aceptar",
+        });
       }
-    });
-  }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error del servidor",
+        text: "Hubo un problema con el servidor. Intenta más tarde.",
+        confirmButtonText: "Aceptar",
+      });
+    }
+  });
+};
