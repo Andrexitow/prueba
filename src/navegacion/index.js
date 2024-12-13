@@ -8,7 +8,7 @@ import { renderMatricula } from '../components/matriculacion.js';
 import { renderSettings } from '../components/settings.js';
 import { renderAcademicPlatform } from '../components/academicPlataform.js';
 import renderEducacionVirtual from '../components/views/educacionVirtual.js';
-import { renderHome } from '../components/home.js';
+// import { renderHome } from '../components/home.js';
 
 
 const appContainer = document.getElementById('app');
@@ -75,16 +75,16 @@ async function navigate(view) {
       break;
 
     case 'dashboard': 
-      if (isAuthenticated() && userInfo?.rol === 0) {
+      // if (isAuthenticated() && userInfo?.rol === 0) {
         renderDashboard(appContainer);
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Acceso denegado',
-          text: 'No tienes permisos para ver esta página.',
-          confirmButtonText: 'Aceptar',
-        }).then(() => navigate('academicPlatform'));
-      }
+      // } else {
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'Acceso denegado',
+      //     text: 'No tienes permisos para ver esta página.',
+      //     confirmButtonText: 'Aceptar',
+      //   }).then(() => navigate('academicPlatform'));
+      // }
       break;
 
       case 'dashboardADMIN': 
@@ -101,11 +101,11 @@ async function navigate(view) {
 
     case 'matricula':
       // Muestra el proceso de matrícula estándar
-      if (isAuthenticated()) {
+      // if (isAuthenticated()) {
         renderStudentEnrollment(appContainer);
-      } else {
-        redirectToLogin();
-      }
+      // } else {
+      //   redirectToLogin();
+      // }
       break;
 
     case 'academicPlatform':
@@ -117,7 +117,7 @@ async function navigate(view) {
       break;
 
     case 'educacionVirtual':
-      renderEducacionVirtual(appContainer); // Nueva vista
+      renderEducacionVirtual(appContainer);
       break;
 
     case 'matriculacion':
@@ -137,7 +137,7 @@ async function navigate(view) {
       break;
 
     default:
-      renderHome(appContainer);
+      renderAcademicPlatform(appContainer);
       break;
   }
 
@@ -192,7 +192,7 @@ function updateNavbar() {
     navbarContent.innerHTML = `
       <div class="flex items-center space-x-6">
         <a href="#" id="showHome" class="text-[#037470] hover:text-[#026a5c] text-lg font-semibold no-underline transition duration-200">Inicio</a>
-        <a href="#" id="showCourse" class="text-[#037470] hover:text-[#026a5c] text-lg font-semibold no-underline transition duration-200">Cursos</a>
+        <a href="#" id="showCourseUser" class="text-[#037470] hover:text-[#026a5c] text-lg font-semibold no-underline transition duration-200">Cursos</a>
         <!-- Botón Login con color anaranjado -->
         <a href="#" id="navbarLogin" class="bg-[#FF8C00] text-white px-6 py-2 rounded-md hover:bg-[#e07700] transition duration-200 no-underline">Login</a>
         <!-- Botón Sign up -->
