@@ -1,9 +1,9 @@
-// navigation.js
 import { renderLogin } from '../components/login.js';
 import { renderRegister } from '../components/register.js';
 import { renderDashboard } from '../components/dashboardADMIN.js';
 import { renderStudentEnrollment } from '../components/matricula.js';
 import { renderMatricula } from '../components/matriculacion.js';
+import { renderSettings } from '../components/settings.js';
 import { renderAcademicPlatform } from '../components/academicPlataform.js';
 import renderEducacionVirtual from '../components/views/educacionVirtual.js';
 import { renderHome } from '../components/home.js';
@@ -11,7 +11,6 @@ import { renderHome } from '../components/home.js';
 
 const appContainer = document.getElementById('app');
 
-// Función para decodificar el token
 function decodeToken(token) {
   try {
     const base64Url = token.split('.')[1];
@@ -23,7 +22,6 @@ function decodeToken(token) {
   }
 }
 
-// Función para obtener información del usuario
 export function getUserInfo() {
   const token = getToken();
   if (token) {
@@ -37,24 +35,19 @@ export function getUserInfo() {
   return null;
 }
 
-
-// Función para obtener el token
 function getToken() {
   return localStorage.getItem('token');
 }
 
-// Función para verificar si el usuario está autenticado
 function isAuthenticated() {
   const token = getToken();
-  return !!token; // Retorna true si el token existe, false si no
+  return !!token; 
 }
 
 
 // Función de navegación
 function navigate(view) {
-  appContainer.innerHTML = ''; // Limpiar el contenedor
-
-  // Función para manejar la redirección con SweetAlert
+  appContainer.innerHTML = '';
   const redirectToLogin = () => {
     Swal.fire({
       icon: 'error',
@@ -66,13 +59,8 @@ function navigate(view) {
     });
   };
 
-  // Obtener la información del usuario
   const userInfo = getUserInfo();
 
-  // Recuperar fromRegister desde localStorage
-  // const fromRegister = localStorage.getItem('fromRegister') === 'true';
-
-  // Lógica de navegación según la vista
   switch (view) {
     case 'login':
       renderLogin(appContainer);
@@ -120,6 +108,14 @@ function navigate(view) {
         redirectToLogin();
       }
       break;
+    
+      case 'settings':
+        if (isAuthenticated()) {
+          renderSettings(appContainer);
+        } else {
+          redirectToLogin();
+        }
+        break;
 
     default:
       renderHome(appContainer);
@@ -145,8 +141,13 @@ function updateNavbar() {
       <div class="flex items-center space-x-6">
         <!-- Nuevos enlaces de navegación dentro de este div -->
         <a href="#" id="showCourseUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Mis Cursos</a>
-        <a href="#" id="showCourse" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Cursos</a>
-        <a href="#" id="showSettings" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Configuración</a>
+        
+        <!-- Este enlace se oculta si el usuario es Admin (rol === 0) -->
+        ${userInfo.rol == 1 ? `
+          <a href="#" id="showCourse" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Cursos</a>
+        ` : ''}
+        
+        <a href="#" id="showSettings" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Perfil</a>
 
         <!-- Información de usuario y botón de logout -->
         <div class="flex items-center space-x-4">
@@ -154,7 +155,6 @@ function updateNavbar() {
           <button id="logoutButton" class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition duration-200">Cerrar Sesión</button>
         </div>
       </div>
-
     `;
 
     document.getElementById('logoutButton').addEventListener('click', () => {
@@ -171,12 +171,10 @@ function updateNavbar() {
         <!-- Botón Sign up -->
         <button id="showRegister" class="bg-[#037470] text-white px-6 py-2 rounded-md hover:bg-[#026a5c] transition duration-200">Sign up</button>
       </div>
-
-
-
     `;
   }
 }
+
 
 // Configuración de eventos de navegación
 function setupNavigationEvents() {
@@ -202,6 +200,9 @@ function setupNavigationEvents() {
     } else if (e.target.id === 'showCourseUser') {
       e.preventDefault();
       navigate('academicPlatform');
+    } else if (e.target.id === 'showSettings') {
+      e.preventDefault();
+      navigate('settings');
     }
   });
 }
@@ -229,10 +230,10 @@ const getReferralCode = async () => {
     const response = await fetch(`https://api-skolmi.onrender.com/v1/user/users/${userInfo.userId}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`, // Enviar el token de autenticación en los headers
+        'Authorization': `Bearer ${token}`, 
         'Content-Type': 'application/json',
       },
-      credentials: 'include', // Para manejar cookies o sesiones si es necesario
+      credentials: 'include', 
     });
 
     if (!response.ok) {
@@ -240,9 +241,7 @@ const getReferralCode = async () => {
     }
 
     const data = await response.json();
-
-    // Asegúrate de acceder correctamente al primer elemento del arreglo
-    const codigo = data[0]?.codigo; // Esto debería ser el código que necesitas
+    const codigo = data[0]?.codigo; 
 
     if (!codigo) {
       throw new Error('No se encontró el código de referencia.');

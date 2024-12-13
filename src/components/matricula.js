@@ -1,6 +1,3 @@
-
-import { navigate } from "../navegacion";
-
 export function renderStudentEnrollment(container) {
 
   container.innerHTML = `
@@ -65,12 +62,4 @@ export function renderStudentEnrollment(container) {
 
   `;
 
-  // Event listener para cerrar sesión desde el navbar
-  // document.getElementById('logoutBtn').addEventListener('click', () => {
-  //   localStorage.removeItem('token');
-  //   window.location.href = "/login.html";  // Redirigir a la página de login
-  // });
-
-  // Aquí puedes agregar la lógica para traer los datos de la matrícula desde la API
-  // Si tienes una API que proporciona la información de la matrícula, realiza la llamada aquí y llena las tarjetas con los datos reales
 }
