@@ -3,7 +3,7 @@ import { renderRegister } from '../components/register.js';
 import { renderDashboard } from '../components/dashboardADMIN.js';
 import { renderStudentEnrollment } from '../components/matricula.js';
 import { renderMatricula } from '../components/matriculacion.js';
-import { renderSettings } from '../components/settings.js';
+// import { renderSettings } from '../components/settings.js';
 import { renderAcademicPlatform } from '../components/academicPlataform.js';
 import renderEducacionVirtual from '../components/views/educacionVirtual.js';
 import { renderHome } from '../components/home.js';
@@ -47,76 +47,157 @@ function isAuthenticated() {
 
 // Función de navegación
 async function navigate(view) {
-  appContainer.innerHTML = ''; // Limpiar el contenedor
+  appContainer.innerHTML = '';
 
-  // Renderiza la vista según la navegación
+  // Función para redirigir al login con un mensaje
+  const redirectToLogin = () => {
+    Swal.fire({
+      icon: 'error',
+      title: 'No estás autenticado',
+      text: 'Redirigiendo al login...',
+      confirmButtonText: 'Aceptar',
+    }).then(() => {
+      navigate('login');
+    });
+  };
+
   const userInfo = getUserInfo();
 
-  if (view === 'login') {
-    renderLogin(appContainer);
-  } else if (view === 'register') {
-    renderRegister(appContainer);
-  } else if (view === 'dashboard') {
-    if (isAuthenticated() && userInfo?.rol === 0) {
-      renderDashboard(appContainer);
-    } else {
-      alert('Acceso denegado. No tienes permisos para ver esta página.');
-      return navigate('home'); // Evitar bucles usando return
-    }
-  } else if (view === 'matricula') {
-    if (isAuthenticated()) {
-      try {
-        const isEnrolled = await validate(userInfo.userId);
-        console.log('Resultado de isEnrolled:', isEnrolled);
+  switch (view) {
+    case 'login':
+      renderLogin(appContainer);
+      break;
 
-        if (!isEnrolled) {
-          renderStudentEnrollment(appContainer); // Si no está matriculado, muestra la vista de matrícula.
-        } else {
-          return navigate('academicPlataform'); // Evitar bucles usando return
-        }
-      } catch (error) {
-        console.error('Error al validar la matrícula:', error);
-        alert('Hubo un problema al validar tu matrícula. Intenta más tarde.');
-      }
-    } else {
-      alert('No estás autenticado. Redirigiendo al login...');
-      return navigate('login'); // Evitar bucles usando return
-    }
-  } else if (view === 'academicPlataform') {
-    if (isAuthenticated()) {
-      try {
-        const isEnrolled = await validate(userInfo.userId);
-        console.log('Resultado de validate:', isEnrolled);
+    case 'register':
+      renderRegister(appContainer);
+      break;
 
-        if (isEnrolled) {
-          renderAcademicPlatform(appContainer); // Si está matriculado, muestra la plataforma académica.
-        } else {
-          return navigate('matricula'); // Evitar bucles usando return
-        }
-      } catch (error) {
-        console.error('Error al validar la plataforma académica:', error);
-        alert('Hubo un problema al validar tu acceso. Intenta más tarde.');
+    case 'dashboard':
+      if (isAuthenticated() && userInfo?.rol === 0) {
+        renderDashboard(appContainer);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Acceso denegado',
+          text: 'No tienes permisos para ver esta página.',
+          confirmButtonText: 'Aceptar',
+        }).then(() => navigate('academicPlatform'));
       }
-    } else {
-      alert('No estás autenticado. Redirigiendo al login...');
-      return navigate('login'); // Evitar bucles usando return
-    }
-  } else if (view === 'educacionVirtual') { // NUEVA VISTA -------------
-    renderEducacionVirtual(appContainer);
-  } else if (view === 'matriculacion') {
-    if (isAuthenticated()) {
-      renderMatricula(appContainer);
-    } else {
-      alert('No estás autenticado. Redirigiendo al login...');
-      return navigate('login'); // Evitar bucles usando return
-    }
-  } else {
-    renderHome(appContainer);
+      break;
+
+      case 'matricula':
+      if (isAuthenticated()) {
+        try {
+          const isEnrolled = await validate(userInfo.userId);
+          console.log('Resultado de isEnrolled:', isEnrolled);
+
+          if (!isEnrolled) {
+            renderStudentEnrollment(appContainer); // Si no está matriculado, muestra la vista de matrícula.
+          } else {
+            return navigate('academicPlataform'); // Evitar bucles usando return
+          }
+        } catch (error) {
+          console.error('Error al validar la matrícula:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al validar tu matrícula. Intenta más tarde.',
+            confirmButtonText: 'Aceptar',
+          });
+        }
+      } else {
+        redirectToLogin();
+      }
+      break;
+
+    case 'academicPlatform':
+      if (isAuthenticated()) {
+        try {
+          const isEnrolled = await validate(userInfo.userId);
+          console.log('Resultado de validate:', isEnrolled);
+
+          if (isEnrolled) {
+            renderAcademicPlatform(appContainer); // Si está matriculado, muestra la plataforma académica.
+          } else {
+            return navigate('matricula'); // Evitar bucles usando return
+          }
+        } catch (error) {
+          console.error('Error al validar la plataforma académica:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al validar tu acceso. Intenta más tarde.',
+            confirmButtonText: 'Aceptar',
+          });
+        }
+      } else {
+        redirectToLogin();
+      }
+      break;
+
+    //   case 'matricula':
+    //     // Lógica de matrícula con validación asincrónica
+    //     if (isAuthenticated()) {
+    //       try {
+    //         const isEnrolled = await validate(userInfo.userId);
+    //         console.log('Resultado de isEnrolled:', isEnrolled);
+  
+    //         if (!isEnrolled) {
+    //           renderStudentEnrollment(appContainer); // Si no está matriculado, muestra la vista de matrícula.
+    //         } else {
+    //           return navigate('academicPlatform'); // Evitar bucles usando return
+    //         }
+    //       } catch (error) {
+    //         console.error('Error al validar la matrícula:', error);
+    //         Swal.fire({
+    //           icon: 'error',
+    //           title: 'Error',
+    //           text: 'Hubo un problema al validar tu matrícula. Intenta más tarde.',
+    //           confirmButtonText: 'Aceptar',
+    //         });
+    //       }
+    //     } else {
+    //       redirectToLogin();
+    //     }
+    //     break;
+
+    // case 'academicPlatform':
+    //   if (isAuthenticated()) {
+    //     renderAcademicPlatform(appContainer);
+    //   } else {
+    //     redirectToLogin();
+    //   }
+    //   break;
+
+    case 'educacionVirtual':
+      renderEducacionVirtual(appContainer); // Nueva vista
+      break;
+
+    case 'matriculacion':
+      if (isAuthenticated()) {
+        renderMatricula(appContainer);
+      } else {
+        redirectToLogin();
+      }
+      break;
+
+    case 'settings':
+      if (isAuthenticated()) {
+        renderSettings(appContainer);
+      } else {
+        redirectToLogin();
+      }
+      break;
+
+    default:
+      renderHome(appContainer);
+      break;
   }
 
-  // Actualizar navbar
+  // Actualizar la barra de navegación
   updateNavbar();
 }
+
 
 
 
@@ -132,11 +213,11 @@ function updateNavbar() {
     navbarContent.innerHTML = `
       <div class="flex items-center space-x-6">
         <!-- Nuevos enlaces de navegación dentro de este div -->
-        <a href="#" id="showCourseUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Mis Cursos</a>
+        <a href="#" id="showCourse" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Mis Cursos</a>
         
         <!-- Este enlace se oculta si el usuario es Admin (rol === 0) -->
         ${userInfo.rol == 1 ? `
-          <a href="#" id="showCourse" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Cursos</a>
+          <a href="#" id="showCourseUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Cursos</a>
         ` : ''}
         
         <a href="#" id="showSettings" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Perfil</a>
@@ -182,7 +263,7 @@ function setupNavigationEvents() {
       navigate('dashboard');
     } else if (e.target.id === 'showCourse') {
       e.preventDefault();
-      navigate('matricula');
+      navigate('academicPlatform');
     } else if (e.target.id === 'showMatricula') {
       e.preventDefault();
       navigate('matriculacion');
@@ -191,7 +272,7 @@ function setupNavigationEvents() {
       navigate('educacionVirtual');
     } else if (e.target.id === 'showCourseUser') {
       e.preventDefault();
-      navigate('academicPlatform');
+      navigate('matricula');
     } else if (e.target.id === 'showSettings') {
       e.preventDefault();
       navigate('settings');
