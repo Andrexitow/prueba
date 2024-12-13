@@ -1,44 +1,48 @@
 // Renderiza la vista de Referidos
 export async function renderReferidos(container) {
     container.innerHTML = `
-      <div class="container mt-5">
-        <div class="row">
-          <!-- Título de la vista -->
-          <div class="col-12">
-            <h3 class="mb-4">Listado de Referidos</h3>
-          </div>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <!-- Título de la vista -->
+        <div class="col-12 text-center">
+          <h3 class="mb-4">Listado de Referidos</h3>
         </div>
-  
-        <!-- Tabla de referidos -->
-        <div class="card shadow-sm mt-5">
-          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5 class="card-title m-0">Referidos</h5>
-            <input type="text" id="searchInput" class="form-control form-control-sm w-25" placeholder="Buscar referido...">
-          </div>
-          <div class="card-body">
-            <table class="table table-hover">
-              <thead class="table-light">
-                <tr>
-                  <th>ID Usuario Referido</th>
-                  <th>Correo Usuario Referido</th>
-                  <th>ID Usuario Referidor</th>
-                  <th>Correo Usuario Referidor</th>
-                  <th>Estado</th>
-                  <th>Fecha de Referido</th>
-                </tr>
-              </thead>
-              <tbody id="referidoList">
-                <tr>
-                  <td colspan="6" class="text-center">Cargando...</td>
-                </tr>
-              </tbody>
-            </table>
+      </div>
+
+      <div class="row justify-content-center">
+        <!-- Sección izquierda: Tabla de referidos -->
+        <div class="col-lg-10 col-md-12">
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+              <h5 class="card-title m-0">Referidos</h5>
+              <input type="text" id="searchInput" class="form-control form-control-sm w-25" placeholder="Buscar referido...">
+            </div>
+            <div class="card-body" style="height: 400px; overflow-y: auto;">
+              <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>ID Usuario Referido</th>
+                    <th>Correo Usuario Referido</th>
+                    <th>ID Usuario Referidor</th>
+                    <th>Correo Usuario Referidor</th>
+                    <th>Estado</th>
+                    <th>Fecha de Referido</th>
+                  </tr>
+                </thead>
+                <tbody id="referidoList">
+                  <tr>
+                    <td colspan="6" class="text-center">Cargando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <nav>
               <ul id="pagination" class="pagination justify-content-center"></ul>
             </nav>
           </div>
         </div>
       </div>
+    </div>
     `;
   
     // Llamar a la función para obtener los referidos desde la API
@@ -78,9 +82,9 @@ export async function renderReferidos(container) {
   
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td>${referido.id_usuario_referido}</td>
+            <td>${referido.nombre_usuario_referido}</td>
             <td>${referido.correo_usuario_referido}</td>
-            <td>${referido.id_usuario_referidor}</td>
+            <td>${referido.nombre_usuario_referidor}</td>
             <td>${referido.correo_usuario_referidor}</td>
             <td><span class="badge bg-${estado === 'Activo' ? 'success' : 'secondary'}">${estado}</span></td>
             <td>${fechaFormateada}</td>

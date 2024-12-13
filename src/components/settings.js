@@ -56,7 +56,7 @@ export async function renderSettings(container) {
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
       <div id="toastMessage" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
-          <img src="https://via.placeholder.com/20" class="rounded me-2" alt="...">
+          <img src="./public/sources/descarga.png" class="rounded me-2" alt="..." style="width: 30px; height: 30px;">
           <strong class="me-auto">Notificación</strong>
           <small>Ahora</small>
           <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
