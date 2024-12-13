@@ -46,8 +46,9 @@ function getToken() {
 // Función para verificar si el usuario está autenticado
 function isAuthenticated() {
   const token = getToken();
-  return !!token;
+  return !!token; // Retorna true si el token existe, false si no
 }
+
 
 // Función de navegación
 function navigate(view) {
@@ -95,15 +96,10 @@ function navigate(view) {
       break;
 
     case 'matricula':
-      // if (fromRegister) {
-      //   // Si viene del registro, redirige a matrícula
-      //   renderMatricula(appContainer);
-      //   localStorage.removeItem('fromRegister'); // Limpiar después de usarlo
-      // } else {
-      //   // Si no viene del registro, mostrar el proceso normal de matrícula
-      //   renderStudentEnrollment(appContainer);
-      // }
+      // Muestra el proceso de matrícula estándar
+      renderStudentEnrollment(appContainer);
       break;
+
 
     case 'academicPlatform':
       if (isAuthenticated()) {
@@ -149,6 +145,7 @@ function updateNavbar() {
       <div class="flex items-center space-x-6">
         <!-- Nuevos enlaces de navegación dentro de este div -->
         <a href="#" id="showCourseUser" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Mis Cursos</a>
+        <a href="#" id="showCourse" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Cursos</a>
         <a href="#" id="showSettings" class="text-gray-800 hover:text-blue-600 text-lg font-semibold no-underline transition duration-200">Configuración</a>
 
         <!-- Información de usuario y botón de logout -->
@@ -162,7 +159,7 @@ function updateNavbar() {
 
     document.getElementById('logoutButton').addEventListener('click', () => {
       localStorage.removeItem('token');
-      navigate('home');
+      navigate('educacionVirtual');
     });
   } else {
     navbarContent.innerHTML = `
@@ -205,7 +202,7 @@ function setupNavigationEvents() {
     } else if (e.target.id === 'showCourseUser') {
       e.preventDefault();
       navigate('academicPlatform');
-    } 
+    }
   });
 }
 
@@ -243,7 +240,7 @@ const getReferralCode = async () => {
     }
 
     const data = await response.json();
-    
+
     // Asegúrate de acceder correctamente al primer elemento del arreglo
     const codigo = data[0]?.codigo; // Esto debería ser el código que necesitas
 
@@ -257,10 +254,10 @@ const getReferralCode = async () => {
     tempInput.value = codigo;  // Asignamos el código al input
     tempInput.select();  // Seleccionamos el texto del input
     document.execCommand('copy');  // Copiamos el código al portapapeles
-    
+
     // Eliminar el input temporal después de copiar
     document.body.removeChild(tempInput);
-    
+
     // Mostrar mensaje de confirmación con el código generado
     Swal.fire({
       icon: 'success',
@@ -286,51 +283,36 @@ document.addEventListener('click', (e) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Inicialización
 function initApp() {
+  const isAuthenticatedUser = isAuthenticated(); 
+
   const userInfo = getUserInfo();
 
-  if (isAuthenticated()) {
+  if (isAuthenticatedUser) {
+    console.log('Usuario autenticado');
+
     if (userInfo?.rol === 0) {
-      // Rol de Administrador
-      navigate('dashboard'); // Se asegura de que se llame el dashboard correcto
+      console.log('Rol de Administrador');
+      navigate('dashboard');
+    } else if (userInfo?.rol === 1) {
+      console.log('Usuario matriculado');
+      navigate('academicPlatform');
     } else {
-        if (userInfo.rol == 1) {
-            // Si el usuario está matriculado, carga la academicPlatform
-            navigate('academicPlatform');
-          } else {
-            // Carga el dashboard o el formulario de matrícula
-            navigate('matricula');
-          }
+      console.log('Usuario sin matrícula o con rol desconocido, redirigiendo a matrícula');
+      navigate('matricula');
     }
   } else {
-    // Usuario no autenticado
+    console.log('Usuario no autenticado, redirigiendo a home');
     navigate('educacionVirtual');
   }
 
+  // Configurar eventos de navegación y actualizar la barra de navegación
   setupNavigationEvents();
   updateNavbar();
 }
+
+
+
 
 
 
